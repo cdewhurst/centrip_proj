@@ -5,15 +5,18 @@ import '../models/connection_status.dart';
 import '../providers/connection_state_notifier.dart';
 
 class ConnectionWidget extends ConsumerWidget {
-  const ConnectionWidget({super.key});
+  final _addressController = TextEditingController();
+  final _portController = TextEditingController();
+
+  ConnectionWidget({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isSending = ref.watch(connectionStatusProvider) != ConnectionStatus.stopped;
     final notifier = ref.read(connectionStatusProvider.notifier);
 
-    final addressController = TextEditingController();
-    final portController = TextEditingController();
+    _addressController.text = "www.google.com/search";
+    _portController.text = "443";
 
     return Padding(
       padding: const EdgeInsets.all(16),
@@ -29,7 +32,7 @@ class ConnectionWidget extends ConsumerWidget {
             children: [
               Expanded(
                 child: TextField(
-                  controller: addressController,
+                  controller: _addressController,
                   decoration: const InputDecoration(
                     labelText: 'Server Address',
                     border: OutlineInputBorder(),
@@ -40,8 +43,7 @@ class ConnectionWidget extends ConsumerWidget {
               SizedBox(
                 width: 100,
                 child: TextField(
-                  controller: portController,
-                  keyboardType: TextInputType.number,
+                  controller: _portController,
                   decoration: const InputDecoration(
                     labelText: 'Port',
                     border: OutlineInputBorder(),
@@ -56,13 +58,13 @@ class ConnectionWidget extends ConsumerWidget {
                   backgroundColor: isSending ? Colors.red : Colors.green,
                 ),
                 onPressed: () {
-                  final address = addressController.text.trim();
-                  final port = portController.text.trim();
+                  final address = _addressController.text.trim();
+                  final port = int.tryParse(_portController.text.trim());
 
                   // Simple validation
-                  if (address.isEmpty || port.isEmpty) {
+                  if (address.isEmpty || port == null || port < 0 || port > 65535) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Enter both server address and port.')),
+                      const SnackBar(content: Text('Enter both server address and port as an integer.')),
                     );
                     return;
                   }

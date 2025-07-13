@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'screens/main_screen.dart';
+import 'services/tcp_client.dart';
 import 'theme.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  final tcpClient = TcpClient();
+  await tcpClient.connect('127.0.0.1', 30341); // Arbitrary port
+
   runApp(
       ProviderScope( // Sets up Riverpod usage.
+        overrides: [
+          tcpClientProvider.overrideWithValue(tcpClient)
+        ],
         child: const MyApp()
     )
   );
