@@ -1,0 +1,97 @@
+# ===========================
+# Visual Studio
+# ===========================
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.VC.db
+*.vssscc
+*.ncb
+*.aps
+*.opendb
+
+# Build results
+[Bb]in/
+[Oo]bj/
+*.exe
+*.dll
+*.pdb
+*.cache
+*.log
+*.vspscc
+
+# Installer
+*.msi
+*.wixobj
+*.wixpdb
+*.vdproj.*
+
+# Test results
+TestResults/
+*.trx
+*.coverage
+*.coveragexml
+
+# Others
+_ReSharper*/
+*.resharper
+*.DotSettings.user
+packages
+
+# ===========================
+# VS Code
+# ===========================
+.vscode/
+.history/
+*.code-workspace
+
+# ===========================
+# Dart / Flutter
+# ===========================
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+build/
+.melos_tool/
+
+# IDE files
+.idea/
+*.iml
+
+# Flutter dependencies
+pubspec.lock
+
+# Platform folders
+windows/
+macos/
+linux/
+ios/
+android/
+
+# Generated files
+*.g.dart
+
+# ===========================
+# Advanced Installer
+# ===========================
+*.aip.bak
+*.aip~
+*.aip.synchronized
+*.aip.log
+*.aip.lock
+AdvancedInstallerBuild/
+*.msm
+*-cache
+
+# ===========================
+# Misc
+# ===========================
+*.DS_Store
+Thumbs.db
+*.orig
+*.swp
+*.bak
