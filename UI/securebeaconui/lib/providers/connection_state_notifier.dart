@@ -18,22 +18,24 @@ class ConnectionStateNotifier extends StateNotifier<ConnectionStatus> {
     _tcpClient = ref.read(tcpClientProvider);
     _subscription = _tcpClient.messages.listen((msg)
     {
-      if (msg['Type'] == 'State')
+      if (msg['Type'] == 'Status')
       {
+        state = ConnectionStatus.values.firstWhere(
+              (e) => e.name.toLowerCase() == msg['Status'].toLowerCase(),
+          orElse: () => ConnectionStatus.failed,
+        );
       }
     });
   }
 
   void toggleConnection(String address, int port) {
-    if (state == ConnectionStatus.stopped) {
+    if (state == ConnectionStatus.stopped || state == ConnectionStatus.failed) {
       // Currently stopped. Try to start
       ref.read(logProvider.notifier).add("${nowInIso8601WithOffset()} Sent start request");
-      state = ConnectionStatus.startRequested;
       _tcpClient.send(RequestMessage(Command.start, address: address, port: port).toJsonString());
     } else {
       // Currently attempting connections. Try to stop
       ref.read(logProvider.notifier).add("${nowInIso8601WithOffset()} Sent stop request");
-      state = ConnectionStatus.stopped;
       _tcpClient.send(RequestMessage(Command.stop).toJsonString());
     }
   }

@@ -11,11 +11,11 @@ namespace SecureBeaconService
         static void Main()
         {
 #if DEBUG
-            new UiCommsServer(30341).AcceptClientsAsync(CancellationToken.None).GetAwaiter().GetResult();
+            new Service().RunAsConsole();
 #else
             var servicesToRun = new ServiceBase[]
             {
-                new UiCommsServer(30341)
+                new Service()
             };
             ServiceBase.Run(servicesToRun);
 #endif

@@ -6,14 +6,13 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.ServiceProcess;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace SecureBeaconService
 {
-    internal class UiCommsServer : ServiceBase
+    internal class UiCommsServer
     {
         private readonly List<StreamWriter> _activeClients = new List<StreamWriter>();
         private readonly object _clientLock = new object();
@@ -34,6 +33,7 @@ namespace SecureBeaconService
             _cts = new CancellationTokenSource();
             _listener = new TcpListener(IPAddress.Loopback, _port);
             _listener.Start();
+            Log.UiCommsServer = this;
 
             Task.Run(() => AcceptClientsAsync(_cts.Token));
         }
@@ -51,7 +51,7 @@ namespace SecureBeaconService
                 try
                 {
                     var client = await _listener.AcceptTcpClientAsync();
-                    _ = HandleClientAsync(client, cancellationToken);
+                    _ = _HandleClientAsync(client, cancellationToken);
                 }
                 catch (OperationCanceledException)
                 {
@@ -60,12 +60,12 @@ namespace SecureBeaconService
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"[TcpCommandServer] Accept failed: {ex.Message}");
+                    Log.Write($"[TcpCommandServer] Accept failed: {ex.Message}");
                 }
             }
         }
 
-        private async Task HandleClientAsync(TcpClient client, CancellationToken cancellationToken)
+        private async Task _HandleClientAsync(TcpClient client, CancellationToken cancellationToken)
         {
             using (var stream = client.GetStream())
             using (var reader = new StreamReader(stream, Encoding.UTF8))
@@ -83,7 +83,7 @@ namespace SecureBeaconService
                     string line;
                     while ((line = await reader.ReadLineAsync()) != null && !cancellationToken.IsCancellationRequested)
                     {
-                        _SendMessageToService(line);
+                        _HandleIncomingMessage(line);
                     }
                 }
                 finally
@@ -98,7 +98,7 @@ namespace SecureBeaconService
             }
         }
 
-        private void _SendMessageToService(string line)
+        private void _HandleIncomingMessage(string line)
         {
             try {
                 var message = JsonConvert.DeserializeObject<UiCommand>(line);
@@ -107,7 +107,7 @@ namespace SecureBeaconService
             catch (Exception ex)
             {
                 // A full implementation would catch all the different exceptions that can occur, such as JsonReaderException, JsonSerializationException, etc.
-                Console.WriteLine($"[TcpCommandServer] Error processing message: {ex.Message}");
+                Log.Write($"[TcpCommandServer] Error processing message: {ex.Message}");
             }
         }
 

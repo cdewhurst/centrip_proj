@@ -1,4 +1,5 @@
 ﻿using System.ServiceProcess;
+using System.Threading.Tasks;
 
 namespace SecureBeaconService
 {
@@ -9,12 +10,14 @@ namespace SecureBeaconService
 
         protected override void OnStart(string[] args)
         {
+            Log.Write("SecureBeaconService starting...");
             _uiCommsServer.OnMessageReceived += _OnUiCommand;
             _uiCommsServer.Start();
         }
 
         protected override void OnStop()
         {
+            Log.Write("SecureBeaconService stopping...");
             _uiCommsServer.Stop();
 
             if (_httpsCaller.IsRunning)
@@ -25,12 +28,19 @@ namespace SecureBeaconService
             }
         }
 
+        public void RunAsConsole()
+        {
+            OnStart(null);
+            // Run for 24 hours - plenty enough to debug, or until it's killed.
+            Task.Delay(new System.TimeSpan(24,0,0)).Wait();
+        }
+
         private void _OnUiCommand(UiCommand cmd)
         {
             switch (cmd.Command)
             {
                 case CommandType.Start:
-                    _ = _httpsCaller.Start();
+                    _ = _httpsCaller.Start(cmd.Address, cmd.Port);
                     break;
 
                 case CommandType.Stop:
@@ -38,7 +48,7 @@ namespace SecureBeaconService
                     break;
 
                 default:
-                    //Log($"Unknown command received: {cmd.Command}");
+                    Log.Write($"Unknown command received: {cmd.Command}");
                     break;
             }
         }

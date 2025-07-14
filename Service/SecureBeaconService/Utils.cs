@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
@@ -7,6 +8,22 @@ namespace SecureBeaconService
 {
     internal static class Utils
     {
+        public static Uri UriFromAddressAndPort(string address, int port)
+        {
+            if (address.StartsWith("http") == false)
+            {
+                address = $"{(port == 80 ? "http": "https")}://{address}";
+            }
+            var uri = new Uri(address);
+            var pathAndQueryIndex = address.IndexOf(uri.PathAndQuery);
+            if (pathAndQueryIndex != -1)
+            {
+                address = address.Substring(0, pathAndQueryIndex) + $":{port}{uri.PathAndQuery}";
+                uri = new Uri(address);
+            }
+            return uri;
+        }
+
         public static string GetLikelyPublicIPAddress()
         {
             foreach (var ni in NetworkInterface.GetAllNetworkInterfaces())

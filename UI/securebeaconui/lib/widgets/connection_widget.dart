@@ -19,7 +19,7 @@ class _ConnectionWidgetState extends ConsumerState<ConnectionWidget> {
   void initState()
   {
     super.initState();
-    _addressController = TextEditingController(text: "www.google.com/search");
+    _addressController = TextEditingController(text: "https://httpbin.org/post") ; //"www.google.com/search");
     _portController = TextEditingController(text: "443");
   }
 
@@ -32,7 +32,8 @@ class _ConnectionWidgetState extends ConsumerState<ConnectionWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final isSending = ref.watch(connectionStatusProvider) != ConnectionStatus.stopped;
+    final status = ref.watch(connectionStatusProvider);
+    final isSending = (status != ConnectionStatus.stopped) && (status != ConnectionStatus.failed);
     final notifier = ref.read(connectionStatusProvider.notifier);
 
     return Padding(
