@@ -1,7 +1,7 @@
-﻿using SecureBeaconService;
-using System.ServiceProcess;
+﻿using System.ServiceProcess;
+using System.Threading;
 
-namespace SecureBeaconService2
+namespace SecureBeaconService
 {
     internal static class Program
     {
@@ -11,11 +11,11 @@ namespace SecureBeaconService2
         static void Main()
         {
 #if DEBUG
-            new BeaconService().Run().GetAwaiter().GetResult();
+            new UiCommsServer(30341).AcceptClientsAsync(CancellationToken.None).GetAwaiter().GetResult();
 #else
             var servicesToRun = new ServiceBase[]
             {
-                new BeaconService()
+                new UiCommsServer(30341)
             };
             ServiceBase.Run(servicesToRun);
 #endif

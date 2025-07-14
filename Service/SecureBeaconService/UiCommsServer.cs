@@ -6,13 +6,14 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.ServiceProcess;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace SecureBeaconService
 {
-    internal class UiCommsServer
+    internal class UiCommsServer : ServiceBase
     {
         private readonly List<StreamWriter> _activeClients = new List<StreamWriter>();
         private readonly object _clientLock = new object();
@@ -43,7 +44,7 @@ namespace SecureBeaconService
             _listener?.Stop();
         }
 
-        private async Task AcceptClientsAsync(CancellationToken cancellationToken)
+        public async Task AcceptClientsAsync(CancellationToken cancellationToken)
         {
             while (!cancellationToken.IsCancellationRequested)
             {
