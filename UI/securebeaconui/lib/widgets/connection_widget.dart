@@ -4,19 +4,36 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/connection_status.dart';
 import '../providers/connection_state_notifier.dart';
 
-class ConnectionWidget extends ConsumerWidget {
-  final _addressController = TextEditingController();
-  final _portController = TextEditingController();
+class ConnectionWidget extends ConsumerStatefulWidget {
+  const ConnectionWidget({super.key});
 
-  ConnectionWidget({super.key});
+  @override ConsumerState<ConnectionWidget> createState() =>
+      _ConnectionWidgetState();
+}
+
+class _ConnectionWidgetState extends ConsumerState<ConnectionWidget> {
+  late final _addressController;
+  late final _portController;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  void initState()
+  {
+    super.initState();
+    _addressController = TextEditingController(text: "www.google.com/search");
+    _portController = TextEditingController(text: "443");
+  }
+
+  @override
+  void dispose()
+  {
+    _addressController.dispose();
+    _portController.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final isSending = ref.watch(connectionStatusProvider) != ConnectionStatus.stopped;
     final notifier = ref.read(connectionStatusProvider.notifier);
-
-    _addressController.text = "www.google.com/search";
-    _portController.text = "443";
 
     return Padding(
       padding: const EdgeInsets.all(16),

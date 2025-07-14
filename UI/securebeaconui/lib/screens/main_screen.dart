@@ -35,7 +35,9 @@ class _MainScreenState extends ConsumerState<MainScreen> {
             const SizedBox(height: 16),
             const StatusIndicator(),
             const SizedBox(height: 24),
-            const LogViewer()
+            const Expanded(
+              child:const LogViewer()
+            )
           ],
         ),
       ),
